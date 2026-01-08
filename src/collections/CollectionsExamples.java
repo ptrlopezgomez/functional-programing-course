@@ -1,6 +1,7 @@
 package collections;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static collections.Logger.printlnf;
 
@@ -316,5 +317,439 @@ class SetExamples {
             );
 
         } // LinkedHashSet block
+    }
+}
+
+class TreeSetExamples {
+
+    class E implements Comparable<E> {
+        private String field1;
+
+        public String getField1() {
+            return field1;
+        }
+
+        public void setField1(String field1) {
+            this.field1 = field1;
+        }
+
+        E(String field1) {
+            this.field1=field1;
+        }
+
+        @Override
+        public String toString() {
+            return "E{" +
+                    "field1='" + field1 + '\'' +
+                    '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            E e = (E) o;
+            return Objects.equals(field1, e.field1);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(field1);
+        }
+
+        @Override
+        public int compareTo(E o) {
+            return this.getField1().compareTo(o.getField1());
+        }
+    }
+
+    class U implements Comparable<U>{
+        private String field1;
+
+        public U(String field1) {
+            this.field1 = field1;
+        }
+
+        public String getField1() {
+            return field1;
+        }
+
+        public void setField1(String field1) {
+            this.field1 = field1;
+        }
+
+        @Override
+        public String toString() {
+            return "U{" +
+                    "field1='" + field1 + '\'' +
+                    '}';
+        }
+
+        @Override
+        public int compareTo(U o) {
+            return this.getField1().compareToIgnoreCase(o.getField1());
+        }
+    }
+
+    public static E newE(String field1) {
+        return new TreeSetExamples().new E(field1);
+    }
+
+    public static U newU(String field1) {
+        return new TreeSetExamples().new U(field1);
+    }
+
+    public static void main(String[] args) {
+        Set<E> treeSet1 = new TreeSet<>();
+        treeSet1.add(newE("A"));
+        treeSet1.add(newE("D"));
+        treeSet1.add(newE("B"));
+        treeSet1.add(newE("C"));
+        treeSet1.add(newE("b"));
+
+        SortedSet<E> treeSet2 = new TreeSet<>(Comparator.reverseOrder());
+        treeSet2.add(newE("C"));
+        treeSet2.add(newE("a"));
+        treeSet2.add(newE("b"));
+        treeSet2.add(newE("c"));
+        treeSet2.add(newE("d"));
+        treeSet2.add(newE("B"));
+        treeSet2.add(newE("A"));
+        treeSet2.add(newE("D"));
+
+        SortedSet<U> treeSet3 = new TreeSet<>();
+        treeSet3.add(newU("c"));
+        treeSet3.add(newU("a"));
+        treeSet3.add(newU("b"));
+        treeSet3.add(newU("C"));
+        treeSet3.add(newU("d"));
+        treeSet3.add(newU("B"));
+        treeSet3.add(newU("A"));
+        treeSet3.add(newU("D"));
+
+        printlnf("""
+                ----------------------------------------------------------------------------------
+                TreeSet #1: %s <-- by default is CASE SENSITIVE and ASCENDING order
+                TreeSet #2: %s <-- DESCENDING order, uppercase before lowercase
+                TreeSet #3: %s
+                ----------------------------------------------------------------------------------
+                """
+                , treeSet1
+                , treeSet2
+                , treeSet3
+        );
+    }
+}
+
+class TreeSetExercise {
+    // TODO: Perform create, retrieve, remove, iterate using TreeSet
+    public Set<String> performOperations() {
+        /*
+        Create a TreeSet<String> and add: "Zara", "Amit", "John", "Bob"
+        Retrieve the first and last elements using .first() and .last()
+        Remove "John" from the set
+        Iterate the remaining elements and convert each name to uppercase
+        Add the following result markers:
+        "FIRST:Amit"
+        "LAST:Zara"
+        "CONTAINS_JOHN:false"
+        Return the final result Set<String>.
+        * */
+        TreeSet<String> treeSet = new TreeSet<>();
+        treeSet.add("Zara");
+        treeSet.add("Amit");
+        treeSet.add("John");
+        treeSet.add("Bob");
+        var first = treeSet.first();
+        var last = treeSet.last();
+        treeSet.remove("John");
+        // Using the forEach remaining function (Java 8)
+        TreeSet<String> treeSetUppercased = new TreeSet<>();
+        treeSet.iterator().forEachRemaining(it -> treeSetUppercased.add(it.toUpperCase()));
+        // Using Streams (Java 8)
+        SortedSet<String> uppercasedSet = treeSet.stream()
+                .map(String::toUpperCase)
+                .collect(Collectors.toCollection(TreeSet::new));
+        treeSet.clear();
+        treeSet.addAll(treeSetUppercased);
+        treeSet.add("FIRST:" + first);
+        treeSet.add("LAST:" + last);
+        treeSet.add("CONTAINS_JOHN:" + treeSet.contains("John"));
+
+        printlnf("""
+                --------------------------------------
+                TreeSet Uppercased Result: %s
+                TreeSet Uppercased (Streams): %s
+                TreeSet Exercise Result: %s
+                --------------------------------------
+                """
+        , treeSet
+        , treeSetUppercased
+        , uppercasedSet);
+
+        return treeSet;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("resultado:" + new TreeSetExercise().performOperations());
+    }
+}
+
+class HashMapExamples {
+    public static void main(String[] args) {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("Uno", 1);
+        map.put("Dos", 2);
+        map.put("Tres", 3);
+        map.put("Cuatro", 4);
+        map.putIfAbsent("Cuatro", 5);
+        map.put(null, null);
+        map.put(null, null);
+        map.putAll(Map.of("Ocho", 8, "Nueve", 9));
+        var valorObtenido = map.getOrDefault("Diez", 10);
+        var contieneKey   = map.containsKey("Cuatro");
+        var contieneValue = map.containsValue(9);
+        var contieneNullKey = map.containsKey(null);
+        var valorCompute = map.compute("Ocho", (key, val) -> val != null ? val*val: 0);
+        var computeIfAbsentResult = map.computeIfAbsent("Diez", (llave) -> 10*10);
+        var computeIfAbsentResult2 = map.computeIfAbsent("Diez", (llave) -> 10/2);
+        var _10ValueAddedOrNot = map.putIfAbsent("Diez", 10); // Already added
+        map.putIfAbsent("Diez", 10);
+        var computeIfPresent = map.computeIfPresent("Ocho", (llave, valor) -> {
+            System.out.println("Inside the compute if present");
+            return valor/2;
+        });
+        // Using the merge
+        Map<String, Integer> map2 = new HashMap<>(map);
+        map2.merge("Nueve", 9*9, (llave, valor) -> {
+            var resultado = (int) Math.log((double) valor);
+            System.out.println("Resultado merge:" + resultado);
+            return resultado;
+        });
+
+        printlnf("""
+                ------------------------------------------------------------------------------------------------
+                Map                :%s
+                Valor Obtenido     :%s 
+                ---- The main 3 elements in the map ---
+                EntrySet           :%s 
+                KeySet             :%s 
+                ValuesCollection   :%s
+                ---- contains functions ---
+                ContainsKey        :%s 
+                ContainsValue      :%s 
+                ContainsNull       :%s 
+                ---- compute functions --- 
+                ValorComputed      :%s 
+                ComputeIfAbsent    :%s <-- This will add the result to the map with the corresponding key
+                ComputeIfAbsent2   :%s <-- Not absent scenario 
+                _10ValueAddedOrNot :%s <-- putIfAbsent 
+                ComputeIfPresent   :%s <-- computeIfPresent
+                ---- Using merge() ----
+                Merged results     :%s 
+                ------------------------------------------------------------------------------------------------
+                """
+                , map
+                , valorObtenido
+                , map.entrySet()
+                , map.keySet()
+                , map.values()
+                , contieneKey
+                , contieneValue
+                , contieneNullKey
+                , valorCompute
+                , computeIfAbsentResult
+                , computeIfAbsentResult2
+                , _10ValueAddedOrNot
+                , computeIfPresent
+                , map2
+                );
+
+        /*{
+            // Iterations
+            System.out.println("------ Iterations -----------------");
+            System.out.println("------ for each method -----------");
+            map.forEach((llave, valor) -> {
+                System.out.println("-[1]-->Key=" + llave + ", Value=" + valor);
+            });
+            System.out.println("------- for each remaining ------------");
+            var iterator = map.entrySet().iterator();
+            iterator.forEachRemaining(llave -> {
+                System.out.println("-[2]-->Key=" + llave + ", Value=" + llave.getValue());
+            });
+            System.out.println("------- Using while and explicit iterator ------------");
+            Iterator<Map.Entry<String, Integer>> iteratorExplicit = map.entrySet().iterator();
+            while(iteratorExplicit.hasNext()) {
+                Map.Entry<String, Integer> entry = iteratorExplicit.next();
+                System.out.println("-[3]-->Key=" + entry.getKey() + ", Value=" + entry.getValue());
+            }
+            System.out.println("---- Using For statement -----------");
+            for (Map.Entry<String, Integer> entry : map.entrySet()) {
+                System.out.println("-[4]-->Key=" + entry.getKey() + ", Value=" + entry.getValue());
+            }
+
+        }
+        */ // Iterations examples
+
+    }
+}
+
+class HashMapsExcercise {
+    // TODO: Perform HashMap creation, add, update, retrieve, remove, iterate
+    public Map<String, Integer> performOperations() {
+        /*
+        Create a HashMap<String, Integer> called stock
+        Add the following key-value pairs:
+        "Apple" → 50, "Banana" → 30, "Orange" → 20, "Grapes" → 40
+        X Modify the value for "Banana" to 35
+        X Retrieve and store the quantity of "Apple"
+        X Remove the "Orange" entry
+           Iterate the stock map and:
+        X Create a new map with all keys in uppercase
+            Add two special entries:
+        "APPLE_QTY" → 50
+        "CONTAINS_ORANGE" → 0 or 1
+        */
+        Map<String, Integer> map = new HashMap<>(Map.of("Apple", 50, "Banana", 10, "Orange", 20, "Grapes", 40));
+        map.merge("Banana", 50, (llave, valor) -> valor+5);
+        var appleValue = map.get("Apple");
+        var orangeEntry = map.remove("Orange");
+        var entries = new HashSet<>(map.entrySet());
+        entries.forEach(entry -> {
+            map.putIfAbsent(entry.getKey().toUpperCase(), entry.getValue());
+            map.remove(entry.getKey());
+        });
+        map.put("APPLE_QTY", 50);
+        if (map.get("Orange") == null) {
+            map.put("CONTAINS_ORANGE", 0);
+        } else {
+            map.put("CONTAINS_ORANGE", 1);
+        }
+        return map;
+    }
+
+    public static void main(String[] args) {
+        printlnf("""
+                ----
+                Resultado performOperations: %s
+                ----
+                """, new HashMapsExcercise().performOperations());
+    }
+}
+
+class LinkedHashMapExamples {
+    public static void main(String[] args) {
+        LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<>();
+        linkedHashMap.put("Uno", "1");
+        linkedHashMap.put("Dos", "2");
+        linkedHashMap.put("Tres", "3");
+        linkedHashMap.put("Cuatro", "4");
+
+        var firstElement = linkedHashMap.firstEntry();
+        var lastElement = linkedHashMap.lastEntry();
+
+        var firstElementRemoved = new LinkedHashMap<>(linkedHashMap);
+        firstElementRemoved.pollFirstEntry();
+
+        var lastElementRemoved = new LinkedHashMap<>(linkedHashMap);
+        lastElementRemoved.pollLastEntry();
+
+        firstElementRemoved.putFirst("Cero", "0");
+        lastElementRemoved.putLast("Cinco", "5");
+
+        printlnf("""
+                ----
+                Linked Hashmap: %s
+                First element : %s
+                Last element  : %s
+                After poll first: %s
+                After poll last: %s
+                Map reversed  : %s
+                Normal Set    : %s
+                Sequenced Set : %s
+                ----
+                """, linkedHashMap, firstElement , lastElement,
+                firstElementRemoved, lastElementRemoved, linkedHashMap.reversed()
+                , linkedHashMap.entrySet(), linkedHashMap.sequencedEntrySet()
+        );
+    }
+}
+
+class LinkedHashMapExcercise {
+    public static void main(String[] args) {
+        /*
+        Create a LinkedHashMap<String, String> called capitals
+
+        Add the following country-capital pairs:
+        "India" → "New Delhi"
+        "USA" → "Washington DC"
+        "UK" → "London"
+        "Japan" → "Tokyo"
+
+        Remove the entry for "UK"
+        Use .keySet(), .values(), .entrySet() to access data
+        Check if "Japan" and "UK" exist using .containsKey()
+
+        Build and return a String that includes:
+        All remaining entries in insertion order (key=value)
+        Result markers like HAS_JAPAN=true and HAS_UK=false
+        * */
+
+        LinkedHashMap<String, String> capitals = new LinkedHashMap<>();
+        capitals.put("India", "New Delhi");
+        capitals.put("USA", "Washington DC");
+        capitals.put("UK", "London");
+        capitals.put("Japan", "Tokyo");
+
+        capitals.remove("UK");
+        var keys = capitals.keySet();
+        var values = capitals.values();
+        var entries = capitals.entrySet();
+        // ---- above methods access these below implementations from SequencedMap interface
+        var seqKeys = capitals.sequencedEntrySet();
+        var seqValues = capitals.sequencedValues();
+        var seqEntries = capitals.sequencedEntrySet();
+
+        var existJP = capitals.containsKey("Japan");
+        var existUK = capitals.containsKey("UK");
+
+        capitals.put("HAS_JAPAN", String.valueOf(existJP));
+        capitals.put("HAS_UK", String.valueOf(existUK));
+
+        System.out.println(capitals);
+    }
+}
+
+class TreeMapExamples {
+    public static void main(String[] args) {
+        TreeMap<Double, String> tmt = new TreeMap<>();
+        tmt.put(100.0, "SKU1");
+        tmt.put(87.52, "SKU2");
+        tmt.put(65.52, "SKU3");
+        tmt.put(54.0, "SKU4");
+        tmt.put(2.0, "SKU5");
+
+        printlnf("""
+                ---------------------------------------------------------------------
+                Treemap                           :%s
+                The least higher key than 100     : %s
+                The least higher key than 2       : %s
+                The highest lower key than 65     : %s
+                The highest lower key than 2      : %s
+                The ceiling entry than 100        : %s
+                The ceiling entry than 2          : %s
+                The floor entry than 65          : %s
+                The floor entry than 2            : %s
+                ---------------------------------------------------------------------
+                """
+                , tmt
+                , tmt.higherEntry(100.0)
+                , tmt.higherEntry(2.0)
+                , tmt.lowerEntry(65.0)
+                , tmt.lowerEntry(2.0)
+                , tmt.ceilingEntry(100.0)
+                , tmt.ceilingEntry(2.0)
+                , tmt.floorEntry(65.0)
+                , tmt.floorEntry(2.0)
+        );
     }
 }
